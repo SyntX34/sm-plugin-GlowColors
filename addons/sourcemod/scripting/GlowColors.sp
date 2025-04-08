@@ -19,7 +19,7 @@
 public Plugin myinfo =
 {
     name = "GlowColors & Master Chief colors",
-    author = "BotoX, inGame, .Rushaway",
+    author = "BotoX, inGame, .Rushaway, +SyntX",
     description = "Change your clients colors.",
     version = GlowColors_VERSION,
     url = "https://github.com/srcdslab/sm-plugin-GlowColors"
@@ -56,7 +56,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
     g_Cvar_PluginEnabled = CreateConVar("sm_glowcolors_enabled", "1", "Enable/disable the GlowColors plugin", FCVAR_NONE, true, 0.0, true, 1.0);
-    g_Cvar_RequiredFlags = CreateConVar("sm_glowcolors_flags", "custom2", "Admin flags required to use glowcolors (empty = all players can use)");
+    g_Cvar_RequiredFlags = CreateConVar("sm_glowcolors_flags", "a", "Admin flags required to use glowcolors (empty = all players can use)");
     
     g_hClientCookie = RegClientCookie("glowcolor", "Player glowcolor", CookieAccess_Protected);
     g_hClientCookieRainbow = RegClientCookie("rainbow", "Rainbow status", CookieAccess_Protected);
@@ -112,7 +112,7 @@ public void OnLibraryAdded(const char[] sName)
 {
     if (strcmp(sName, "zombiereloaded", false) == 0)
         g_Plugin_ZR = true;
-    else if (strcmp(sName, "vip_core", false) == 0)
+    if (strcmp(sName, "vip_core", false) == 0)
         g_Plugin_VIP = true;
 }
 
@@ -120,7 +120,7 @@ public void OnLibraryRemoved(const char[] sName)
 {
     if (strcmp(sName, "zombiereloaded", false) == 0)
         g_Plugin_ZR = false;
-    else if (strcmp(sName, "vip_core", false) == 0)
+    if (strcmp(sName, "vip_core", false) == 0)
         g_Plugin_VIP = false;
 }
 
@@ -655,7 +655,8 @@ bool CheckClientAccess(int client)
     if (strlen(sFlags) == 0)
         return true;
     
-    if (CheckCommandAccess(client, "sm_glowcolors", ReadFlagString(sFlags)))
+    int iFlags = ReadFlagString(sFlags);
+    if (GetUserFlagBits(client) & iFlags)
         return true;
     
     if (g_Plugin_VIP && VIP_IsClientVIP(client))
